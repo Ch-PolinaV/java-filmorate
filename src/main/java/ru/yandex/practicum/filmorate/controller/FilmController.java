@@ -5,9 +5,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/films")
@@ -18,14 +19,13 @@ public class FilmController {
     private int id = 1;
 
     @GetMapping
-    public Map<Integer, Film> findAll() {
+    public List<Film> getFilms() {
         log.debug("Получен GET-запрос к эндпоинту: /films на получение всех фильмов");
-        log.debug("Текущее количество фильмов: {}", films.size());
-        return films;
+        return new ArrayList<>(films.values());
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
+    public Film create(@RequestBody Film film) {
         log.debug("Получен POST-запрос к эндпоинту: /film на добавление нового фильма");
 
         if (films.containsKey(film.getId())) {
@@ -40,7 +40,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
+    public Film update(@RequestBody Film film) {
         log.debug("Получен PUT-запрос к эндпоинту: /film на обновление фильма");
 
         if (!films.containsKey(film.getId())) {
@@ -50,7 +50,6 @@ public class FilmController {
             if (isValid(film)) {
                 films.put(film.getId(), film);
                 log.info("Фильм с id: {} обновлен", film.getName());
-
             }
         }
         return film;
@@ -61,12 +60,19 @@ public class FilmController {
     }
 
     private boolean isValid(Film film) {
-        LocalDate cinemaBirthday = LocalDate.of(1895, 12, 28);
-        if (film.getReleaseDate().isBefore(cinemaBirthday)) {
+        if (film.getName().isEmpty()) {
+            throw new ValidationException("Название фильма не должно быть пустым");
+        }
+        if ((film.getDescription().length()) > 200) {
+            throw new ValidationException("Описание фильма больше 200 символов: " + film.getDescription().length());
+        }
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.info("Указанная дата релиза раньше дня рождения кино");
             throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
-        } else {
-            return true;
         }
+        if (film.getDuration() <= 0) {
+            throw new ValidationException("Продолжительность должна быть положительной: " + film.getDuration());
+        }
+        return true;
     }
 }
