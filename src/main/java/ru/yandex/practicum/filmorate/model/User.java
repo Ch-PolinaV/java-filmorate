@@ -20,9 +20,18 @@ public class User {
     @NotBlank(message = "Логин не может быть пустым и содержать пробелы")
     @Pattern(regexp = "\\S*$")
     private String login;
-    @NonNull
     private String name;
     @NonNull
     @Past(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
+
+    public User(@NonNull String email, @NonNull String login, String name, @NonNull LocalDate birthday) {
+        this.email = email;
+        this.login = login;
+        this.birthday = birthday;
+        this.name = name;
+        if (name == null || name.isEmpty() || name.isBlank()) {
+            this.name = login;
+        }
+    }
 }

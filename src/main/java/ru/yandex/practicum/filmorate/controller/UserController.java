@@ -63,7 +63,7 @@ public class UserController {
     }
 
     private void setName(User user) {
-        if (user.getName().isBlank() || user.getName().isEmpty() || user.getName() == null) {
+        if (user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
     }
