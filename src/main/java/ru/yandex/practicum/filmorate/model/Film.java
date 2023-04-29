@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -8,6 +9,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
 public class Film {
     private int id;
     @NotEmpty(message = "Название не может быть пустым")
