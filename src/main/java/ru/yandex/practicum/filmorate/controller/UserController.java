@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exeption.AlreadyExistException;
+import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
@@ -33,7 +33,7 @@ public class UserController {
 
         if (users.containsKey(user.getLogin())) {
             log.info("Пользователь с логином: {} уже существует", user.getLogin());
-            throw new AlreadyExistException("Пользователь с указанным логином уже был добавлен ранее");
+            throw new ValidationException("Пользователь с указанным логином уже был добавлен ранее");
         } else {
             checkName(user);
             user.setId(createId());

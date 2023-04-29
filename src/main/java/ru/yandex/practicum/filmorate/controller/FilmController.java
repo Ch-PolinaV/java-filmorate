@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exeption.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -35,7 +34,7 @@ public class FilmController {
 
         if (films.containsKey(film.getName())) {
             log.info("Фильм с именем: {} уже добавлен", film.getName());
-            throw new AlreadyExistException("Фильм с указанным названием уже был добавлен ранее");
+            throw new ValidationException("Фильм с указанным названием уже был добавлен ранее");
         } else if (isValid(film)) {
             film.setId(createId());
             films.put(film.getName(), film);

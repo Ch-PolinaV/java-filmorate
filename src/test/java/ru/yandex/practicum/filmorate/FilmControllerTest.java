@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.exeption.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -37,7 +36,7 @@ public class FilmControllerTest {
     @Test
     public void shouldNotAddExistFilm() {
         Film film = filmController.create(film1);
-        assertThrows(AlreadyExistException.class, () -> filmController.create(film));
+        assertThrows(ValidationException.class, () -> filmController.create(film));
     }
 
     @Test
