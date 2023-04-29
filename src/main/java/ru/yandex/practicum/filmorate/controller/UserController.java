@@ -16,7 +16,7 @@ import java.util.Map;
 @Slf4j
 public class UserController {
     private final Map<String, User> users = new HashMap<>();
-    private int id = 0;
+    private int id = 1;
 
     @GetMapping
     public Map<String, User> findAll() {
