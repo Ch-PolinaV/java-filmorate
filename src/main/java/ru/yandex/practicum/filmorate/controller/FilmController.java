@@ -18,7 +18,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 public class FilmController {
-    private final Map<String, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
     private int id = 1;
 
     @GetMapping
@@ -32,31 +32,29 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) {
         log.debug("Получен POST-запрос к эндпоинту: /film на добавление нового фильма");
 
-        if (films.containsKey(film.getName())) {
-            log.info("Фильм с именем: {} уже добавлен", film.getName());
-            throw new ValidationException("Фильм с указанным названием уже был добавлен ранее");
+        if (films.containsKey(film.getId()) || film.getId() != 0) {
+            log.info("Фильм с id: {} уже добавлен", film.getName());
+            throw new ValidationException("Фильм с указанным id уже был добавлен ранее");
         } else if (isValid(film)) {
-            film.setId(createId());
-            films.put(film.getName(), film);
             log.info("Добавлен новый фильм: {}", film);
+            film.setId(createId());
+            films.put(film.getId(), film);
         }
         return film;
     }
 
     @PutMapping
-    public Film createOrUpdate(@Valid @RequestBody Film film) {
+    public Film update(@Valid @RequestBody Film film) {
         log.debug("Получен PUT-запрос к эндпоинту: /film на обновление или создание фильма");
-
-        if (isValid(film)) {
-            if (films.containsKey(film.getName())) {
-                log.info("Фильм с именем: {} обновлен", film.getName());
-            } else {
-                film.setId(createId());
-                log.info("Добавлен новый фильм: {}", film);
-            }
+        isValid(film);
+        if (!films.containsKey(film.getId())) {
+            log.info("Несуществующий фильм");
+            throw new ValidationException("Несуществующий фильм");
+        } else {
+            log.info("Фильм с id: {} обновлен", film.getId());
+            films.put(film.getId(), film);
+            return film;
         }
-        films.put(film.getName(), film);
-        return film;
     }
 
     private int createId() {

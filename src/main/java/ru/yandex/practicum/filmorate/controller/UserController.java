@@ -35,10 +35,10 @@ public class UserController {
             log.info("Пользователь с id: {} уже существует", user.getId());
             throw new ValidationException("Пользователь с указанным id уже был добавлен ранее");
         } else {
-            checkName(user);
+            log.info("Добавлен новый пользователь: {}", user);
+            setName(user);
             user.setId(createId());
             users.put(user.getId(), user);
-            log.info("Добавлен новый id: {}", user);
             return user;
         }
     }
@@ -46,25 +46,25 @@ public class UserController {
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.debug("Получен PUT-запрос к эндпоинту: /user на обновление или создание пользователя");
-        checkName(user);
 
-        if (users.containsKey(user.getId())) {
-            log.info("Пользователь с логином: {} обновлен", user.getId());
-            users.put(user.getId(), user);
-        } else {
+        if (!users.containsKey(user.getId())) {
             log.info("Несуществующий пользователь");
+            throw new ValidationException("Несуществующий пользователь");
+        } else {
+            log.info("Пользователь с логином: {} обновлен", user.getId());
+            setName(user);
+            users.put(user.getId(), user);
+            return user;
         }
-        return user;
     }
 
     private int createId() {
         return id++;
     }
 
-    private void checkName(User user) {
-        if (user.getName().isBlank()) {
-            String newName = user.getLogin();
-            user.setName(newName);
+    private void setName(User user) {
+        if (user.getName().isBlank() || user.getName().isEmpty() || user.getName() == null) {
+            user.setName(user.getLogin());
         }
     }
 }

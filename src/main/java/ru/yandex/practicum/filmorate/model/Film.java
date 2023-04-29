@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.NonNull;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
@@ -10,11 +11,15 @@ import java.time.LocalDate;
 @Data
 public class Film {
     private int id;
+    @NonNull
     @NotEmpty(message = "Название не может быть пустым")
-    private final String name;
+    private String name;
+    @NonNull
     @Size(max = 200, message = "Максимальная длина описания — 200 символов")
-    private final String description;
-    private final LocalDate releaseDate;
+    private String description;
+    @NonNull
+    private LocalDate releaseDate;
+    @NonNull
     @Positive(message = "Продолжительность фильма должна быть положительной")
-    private final int duration;
+    private int duration;
 }
