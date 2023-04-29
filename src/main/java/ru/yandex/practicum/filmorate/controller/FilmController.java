@@ -14,11 +14,11 @@ import java.util.Map;
 @RestController
 @Slf4j
 public class FilmController {
-    private final Map<String, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
     private int id = 1;
 
     @GetMapping
-    public Map<String, Film> findAll() {
+    public Map<Integer, Film> findAll() {
         log.debug("Получен GET-запрос к эндпоинту: /films на получение всех фильмов");
         log.debug("Текущее количество фильмов: {}", films.size());
         return films;
@@ -28,12 +28,12 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) {
         log.debug("Получен POST-запрос к эндпоинту: /film на добавление нового фильма");
 
-        if (films.containsKey(film.getName())) {
-            log.info("Фильм с именем: {} уже добавлен", film.getName());
-            throw new ValidationException("Фильм с указанным названием уже был добавлен ранее");
+        if (films.containsKey(film.getId())) {
+            log.info("Фильм с id: {} уже добавлен", film.getName());
+            throw new ValidationException("Фильм с указанным id уже был добавлен ранее");
         } else if (isValid(film)) {
             film.setId(createId());
-            films.put(film.getName(), film);
+            films.put(film.getId(), film);
             log.info("Добавлен новый фильм: {}", film);
         }
         return film;
@@ -43,13 +43,13 @@ public class FilmController {
     public Film update(@Valid @RequestBody Film film) {
         log.debug("Получен PUT-запрос к эндпоинту: /film на обновление фильма");
 
-        if (!films.containsKey(film.getName())) {
-            log.info("Фильм с именем: {} еще не добавлен", film.getName());
-            throw new ValidationException("Фильм с указанным названием еще не был добавлен");
+        if (!films.containsKey(film.getId())) {
+            log.info("Фильм с id: {} еще не добавлен", film.getName());
+            throw new ValidationException("Фильм с указанным id еще не был добавлен");
         } else {
             if (isValid(film)) {
-                films.put(film.getName(), film);
-                log.info("Фильм с именем: {} обновлен", film.getName());
+                films.put(film.getId(), film);
+                log.info("Фильм с id: {} обновлен", film.getName());
 
             }
         }

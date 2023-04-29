@@ -13,11 +13,11 @@ import java.util.Map;
 @RestController
 @Slf4j
 public class UserController {
-    private final Map<String, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
     private int id = 1;
 
     @GetMapping
-    public Map<String, User> findAll() {
+    public Map<Integer, User> findAll() {
         log.debug("Получен GET-запрос к эндпоинту: /users на получение всех пользователей");
         log.debug("Текущее количество пользователей: {}", users.size());
         return users;
@@ -27,13 +27,13 @@ public class UserController {
     public User create(@Valid @RequestBody User user) {
         log.debug("Получен POST-запрос к эндпоинту: /user на создание нового пользователя");
 
-        if (users.containsKey(user.getLogin())) {
-            log.info("Пользователь с логином: {} уже существует", user.getLogin());
-            throw new ValidationException("Пользователь с указанным логином уже был добавлен ранее");
+        if (users.containsKey(user.getId())) {
+            log.info("Пользователь с id: {} уже существует", user.getId());
+            throw new ValidationException("Пользователь с указанным id уже был добавлен ранее");
         } else {
             checkName(user);
             user.setId(createId());
-            users.put(user.getLogin(), user);
+            users.put(user.getId(), user);
             log.info("Добавлен новый пользователь: {}", user);
             return user;
         }
@@ -44,9 +44,9 @@ public class UserController {
         log.debug("Получен PUT-запрос к эндпоинту: /user на обновление пользователя");
         checkName(user);
 
-        if (users.containsKey(user.getLogin())) {
-            users.put(user.getLogin(), user);
-            log.info("Пользователь с логином: {} обновлен", user.getLogin());
+        if (users.containsKey(user.getId())) {
+            users.put(user.getId(), user);
+            log.info("Пользователь с id: {} обновлен", user.getId());
             return user;
         } else {
             log.info("Пользователь с логином: {} еще не существует", user.getLogin());

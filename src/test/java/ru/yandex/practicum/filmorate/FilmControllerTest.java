@@ -41,11 +41,11 @@ public class FilmControllerTest {
 
     @Test
     public void shouldReturnFilmsList() {
-        Map<String, Film> films = new HashMap<>();
+        Map<Integer, Film> films = new HashMap<>();
         Film firstFilm = filmController.create(film1);
-        films.put(firstFilm.getName(), firstFilm);
+        films.put(firstFilm.getId(), firstFilm);
         Film secondFilm = filmController.create(film2);
-        films.put(secondFilm.getName(), secondFilm);
+        films.put(secondFilm.getId(), secondFilm);
         assertEquals(films, filmController.findAll(), "Списки фильмов не совпадают");
     }
 

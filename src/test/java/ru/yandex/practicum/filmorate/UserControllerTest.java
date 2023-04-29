@@ -45,11 +45,11 @@ public class UserControllerTest {
 
     @Test
     public void shouldReturnUsersList() {
-        Map<String, User> users = new HashMap<>();
+        Map<Integer, User> users = new HashMap<>();
         User firstUser = userController.create(user1);
-        users.put(firstUser.getLogin(), firstUser);
+        users.put(firstUser.getId(), firstUser);
         User secondUser = userController.create(user2);
-        users.put(secondUser.getLogin(), secondUser);
+        users.put(secondUser.getId(), secondUser);
         assertEquals(users, userController.findAll(), "Списки пользователей не совпадают");
     }
 }
