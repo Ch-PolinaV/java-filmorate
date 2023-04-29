@@ -8,7 +8,9 @@ import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,11 +44,11 @@ public class FilmControllerTest {
 
     @Test
     public void shouldReturnFilmsList() {
-        Map<String, Film> films = new HashMap<>();
+        List<Film> films = new ArrayList<>();
         Film firstFilm = filmController.create(film1);
-        films.put(firstFilm.getName(), firstFilm);
         Film secondFilm = filmController.create(film2);
-        films.put(secondFilm.getName(), secondFilm);
+        films.add(secondFilm);
+        films.add(firstFilm);
         assertEquals(films, filmController.findAll(), "Списки фильмов не совпадают");
     }
 

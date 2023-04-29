@@ -7,7 +7,9 @@ import ru.yandex.practicum.filmorate.exeption.AlreadyExistException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Validated
@@ -19,10 +21,10 @@ public class UserController {
     private int id = 1;
 
     @GetMapping
-    public Map<String, User> findAll() {
+    public List<User> findAll() {
         log.debug("Получен GET-запрос к эндпоинту: /users на получение всех пользователей");
         log.debug("Текущее количество пользователей: {}", users.size());
-        return users;
+        return new ArrayList<>(users.values());
     }
 
     @PostMapping

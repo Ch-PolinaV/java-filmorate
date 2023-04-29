@@ -9,7 +9,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Validated
@@ -21,10 +23,10 @@ public class FilmController {
     private int id = 1;
 
     @GetMapping
-    public Map<String, Film> findAll() {
+    public List<Film> findAll() {
         log.debug("Получен GET-запрос к эндпоинту: /films на получение всех фильмов");
         log.debug("Текущее количество фильмов: {}", films.size());
-        return films;
+        return new ArrayList<>(films.values());
     }
 
     @PostMapping

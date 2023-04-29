@@ -7,8 +7,8 @@ import ru.yandex.practicum.filmorate.exeption.AlreadyExistException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,11 +45,11 @@ public class UserControllerTest {
 
     @Test
     public void shouldReturnUsersList() {
-        Map<String, User> users = new HashMap<>();
+        List<User> users = new ArrayList<>();
         User firstUser = userController.create(user1);
-        users.put(firstUser.getLogin(), firstUser);
         User secondUser = userController.create(user2);
-        users.put(secondUser.getLogin(), secondUser);
+        users.add(secondUser);
+        users.add(firstUser);
         assertEquals(users, userController.findAll(), "Списки пользователей не совпадают");
     }
 }
