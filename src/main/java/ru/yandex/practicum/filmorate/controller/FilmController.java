@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -11,7 +10,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-@Validated
 @RequestMapping("/films")
 @RestController
 @Slf4j
