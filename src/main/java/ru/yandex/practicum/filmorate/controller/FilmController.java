@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exeption.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -33,7 +32,7 @@ public class FilmController {
 
         if (films.containsKey(film.getName())) {
             log.info("Фильм с именем: {} уже добавлен", film.getName());
-            throw new AlreadyExistException("Фильм с указанным названием уже был добавлен ранее");
+            throw new ValidationException("Фильм с указанным названием уже был добавлен ранее");
         } else if (isValid(film)) {
             film.setId(createId());
             films.put(film.getName(), film);
@@ -43,18 +42,19 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film createOrUpdate(@Valid @RequestBody Film film) {
-        log.debug("Получен PUT-запрос к эндпоинту: /film на обновление или создание фильма");
+    public Film update(@Valid @RequestBody Film film) {
+        log.debug("Получен PUT-запрос к эндпоинту: /film на обновление фильма");
 
-        if (isValid(film)) {
-            if (films.containsKey(film.getName())) {
+        if (!films.containsKey(film.getName())) {
+            log.info("Фильм с именем: {} еще не добавлен", film.getName());
+            throw new ValidationException("Фильм с указанным названием еще не был добавлен");
+        } else {
+            if (isValid(film)) {
+                films.put(film.getName(), film);
                 log.info("Фильм с именем: {} обновлен", film.getName());
-            } else {
-                film.setId(createId());
-                log.info("Добавлен новый фильм: {}", film);
+
             }
         }
-        films.put(film.getName(), film);
         return film;
     }
 
