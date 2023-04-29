@@ -44,8 +44,8 @@ public class FilmControllerTest {
         List<Film> films = new ArrayList<>();
         Film firstFilm = filmController.create(film1);
         Film secondFilm = filmController.create(film2);
-        films.add(secondFilm);
         films.add(firstFilm);
+        films.add(secondFilm);
         assertEquals(films, filmController.findAll(), "Списки фильмов не совпадают");
     }
 
