@@ -48,8 +48,8 @@ public class UserControllerTest {
         List<User> users = new ArrayList<>();
         User firstUser = userController.create(user1);
         User secondUser = userController.create(user2);
-        users.add(secondUser);
         users.add(firstUser);
+        users.add(secondUser);
         assertEquals(users, userController.findAll(), "Списки пользователей не совпадают");
     }
 }
