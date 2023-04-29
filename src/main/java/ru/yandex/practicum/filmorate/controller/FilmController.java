@@ -13,20 +13,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Validated
+@RequestMapping("/films")
 @RestController
 @Slf4j
 public class FilmController {
     private final Map<String, Film> films = new HashMap<>();
     private int id = 0;
 
-    @GetMapping("/films")
+    @GetMapping
     public Map<String, Film> findAll() {
         log.debug("Получен GET-запрос к эндпоинту: /films на получение всех фильмов");
         log.debug("Текущее количество фильмов: {}", films.size());
         return films;
     }
 
-    @PostMapping("/film")
+    @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.debug("Получен POST-запрос к эндпоинту: /film на добавление нового фильма");
 
@@ -41,7 +42,7 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping("/film")
+    @PutMapping
     public Film createOrUpdate(@Valid @RequestBody Film film) {
         log.debug("Получен PUT-запрос к эндпоинту: /film на обновление или создание фильма");
 

@@ -11,20 +11,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Validated
+@RequestMapping("/users")
 @RestController
 @Slf4j
 public class UserController {
     private final Map<String, User> users = new HashMap<>();
     private int id = 0;
 
-    @GetMapping("/users")
+    @GetMapping
     public Map<String, User> findAll() {
         log.debug("Получен GET-запрос к эндпоинту: /users на получение всех пользователей");
         log.debug("Текущее количество пользователей: {}", users.size());
         return users;
     }
 
-    @PostMapping("/user")
+    @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.debug("Получен POST-запрос к эндпоинту: /user на создание нового пользователя");
 
@@ -40,7 +41,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/user")
+    @PutMapping
     public User createOrUpdate(@Valid @RequestBody User user) {
         log.debug("Получен PUT-запрос к эндпоинту: /user на обновление или создание пользователя");
         checkName(user);
