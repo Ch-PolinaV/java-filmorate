@@ -19,6 +19,7 @@ import java.util.Map;
 @Slf4j
 public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
+    private static final LocalDate CINEMA_BIRTHDAY = LocalDate.of(1895, 12, 28);
     private int id = 1;
 
     @GetMapping
@@ -31,15 +32,15 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.debug("Получен POST-запрос к эндпоинту: /film на добавление нового фильма");
+        isValid(film);
 
         if (films.containsKey(film.getId()) || film.getId() != 0) {
             log.info("Фильм с id: {} уже добавлен", film.getName());
             throw new ValidationException("Фильм с указанным id уже был добавлен ранее");
-        } else if (isValid(film)) {
-            log.info("Добавлен новый фильм: {}", film);
-            film.setId(createId());
-            films.put(film.getId(), film);
         }
+        log.info("Добавлен новый фильм: {}", film);
+        film.setId(createId());
+        films.put(film.getId(), film);
         return film;
     }
 
@@ -50,24 +51,20 @@ public class FilmController {
         if (!films.containsKey(film.getId())) {
             log.info("Несуществующий фильм");
             throw new ValidationException("Несуществующий фильм");
-        } else {
-            log.info("Фильм с id: {} обновлен", film.getId());
-            films.put(film.getId(), film);
-            return film;
         }
+        log.info("Фильм с id: {} обновлен", film.getId());
+        films.put(film.getId(), film);
+        return film;
     }
 
     private int createId() {
         return id++;
     }
 
-    private boolean isValid(Film film) {
-        LocalDate cinemaBirthday = LocalDate.of(1895, 12, 28);
-        if (film.getReleaseDate().isBefore(cinemaBirthday)) {
+    private void isValid(Film film) {
+        if (film.getReleaseDate().isBefore(CINEMA_BIRTHDAY)) {
             log.info("Указанная дата релиза раньше дня рождения кино");
             throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
-        } else {
-            return true;
         }
     }
 }

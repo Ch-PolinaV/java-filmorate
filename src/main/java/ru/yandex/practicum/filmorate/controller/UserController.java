@@ -34,13 +34,12 @@ public class UserController {
         if (users.containsKey(user.getId()) || user.getId() != 0) {
             log.info("Пользователь с id: {} уже существует", user.getId());
             throw new ValidationException("Пользователь с указанным id уже был добавлен ранее");
-        } else {
-            log.info("Добавлен новый пользователь: {}", user);
-            setName(user);
-            user.setId(createId());
-            users.put(user.getId(), user);
-            return user;
         }
+        log.info("Добавлен новый пользователь: {}", user);
+        setName(user);
+        user.setId(createId());
+        users.put(user.getId(), user);
+        return user;
     }
 
     @PutMapping
@@ -50,12 +49,11 @@ public class UserController {
         if (!users.containsKey(user.getId())) {
             log.info("Несуществующий пользователь");
             throw new ValidationException("Несуществующий пользователь");
-        } else {
-            log.info("Пользователь с логином: {} обновлен", user.getId());
-            setName(user);
-            users.put(user.getId(), user);
-            return user;
         }
+        log.info("Пользователь с логином: {} обновлен", user.getId());
+        setName(user);
+        users.put(user.getId(), user);
+        return user;
     }
 
     private int createId() {
@@ -63,7 +61,7 @@ public class UserController {
     }
 
     private void setName(User user) {
-        if (user.getName().isBlank() || user.getName().isEmpty()) {
+        if (user.getName().isBlank() || user.getName() == null) {
             user.setName(user.getLogin());
         }
     }
