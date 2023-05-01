@@ -21,8 +21,8 @@ public class UserControllerTest {
     @BeforeEach
     public void beforeEach() {
         userController = new UserController();
-        user1 = new User("qwerty@ya.ru", "login", "name", LocalDate.of(1995, 5, 23));
-        user2 = new User("zxcvb@ya.ru", "name", "", LocalDate.of(1995, 5, 23));
+        user1 = new User(0, "qwerty@ya.ru", "login", "name", LocalDate.of(1995, 5, 23));
+        user2 = new User(0, "zxcvb@ya.ru", "name", "", LocalDate.of(1995, 5, 23));
     }
 
     @Test

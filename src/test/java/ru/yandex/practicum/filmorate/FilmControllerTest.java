@@ -22,9 +22,9 @@ public class FilmControllerTest {
     @BeforeEach
     public void beforeEach() {
         filmController = new FilmController();
-        film1 = new Film("film1", "description", LocalDate.of(2001, 12, 10), 178);
-        film2 = new Film("film3", "description", LocalDate.of(2002, 12, 5), 179);
-        film3 = new Film("film2", "description", LocalDate.of(1002, 12, 5), 179);
+        film1 = new Film(0, "film1", "description", LocalDate.of(2001, 12, 10), 178);
+        film2 = new Film(0, "film3", "description", LocalDate.of(2002, 12, 5), 179);
+        film3 = new Film(0, "film2", "description", LocalDate.of(1002, 12, 5), 179);
     }
 
     @Test
