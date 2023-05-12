@@ -22,9 +22,9 @@ public class User {
     private String name;
     @Past(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
-    private Set<Long> friends;
+    private Set<Long> friends = new HashSet<>();
 
-    public User(long id, String email, String login, String name, LocalDate birthday, Set<Long> friends) {
+    public User(long id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;
         this.login = login;
@@ -32,9 +32,6 @@ public class User {
         this.name = name;
         if (name == null || name.isBlank()) {
             this.name = login;
-        }
-        if (friends == null) {
-            this.friends = new HashSet<>();
         }
     }
 }

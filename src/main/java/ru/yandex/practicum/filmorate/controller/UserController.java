@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -14,24 +13,22 @@ import java.util.List;
 @RestController
 @Slf4j
 public class UserController {
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @Autowired
-    public UserController(UserStorage userStorage, UserService userService) {
-        this.userStorage = userStorage;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
     public List<User> findAll() {
         log.debug("Получен GET-запрос к эндпоинту: /users на получение всех пользователей");
-        return userStorage.findAll();
+        return userService.findAll();
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable long id) {
-        return userStorage.getUserById(id);
+        return userService.getUserById(id);
     }
 
     @GetMapping("/{id}/friends")
@@ -49,13 +46,13 @@ public class UserController {
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.debug("Получен POST-запрос к эндпоинту: /user на создание нового пользователя");
-        return userStorage.create(user);
+        return userService.create(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.debug("Получен PUT-запрос к эндпоинту: /user на обновление или создание пользователя");
-        return userStorage.update(user);
+        return userService.update(user);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

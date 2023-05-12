@@ -2,12 +2,10 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +35,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film create(@Valid @RequestBody Film film) {
+    public Film create(Film film) {
         isValid(film);
 
         if (films.containsKey(film.getId()) || film.getId() != 0) {
@@ -51,7 +49,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film update(@Valid @RequestBody Film film) {
+    public Film update(Film film) {
         isValid(film);
         if (!films.containsKey(film.getId())) {
             log.info("Фильм не найден");

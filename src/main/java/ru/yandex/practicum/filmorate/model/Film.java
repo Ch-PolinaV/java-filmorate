@@ -22,16 +22,13 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Продолжительность фильма должна быть положительной")
     private int duration;
-    private Set<Long> likes;
+    private Set<Long> likes = new HashSet<>();
 
-    public Film(long id, String name, String description, LocalDate releaseDate, int duration, Set<Long> likes) {
+    public Film(long id, String name, String description, LocalDate releaseDate, int duration) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        if (likes == null) {
-            this.likes = new HashSet<>();
-        }
     }
 }

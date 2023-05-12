@@ -25,9 +25,9 @@ public class UserControllerTest {
     public void beforeEach() {
         UserStorage userStorage = new InMemoryUserStorage();
         UserService userService = new UserService(userStorage);
-        userController = new UserController(userStorage, userService);
-        user1 = new User(0, "qwerty@ya.ru", "login", "name", LocalDate.of(1995, 5, 23), null);
-        user2 = new User(0, "zxcvb@ya.ru", "name", "", LocalDate.of(1995, 5, 23), null);
+        userController = new UserController(userService);
+        user1 = new User(0, "qwerty@ya.ru", "login", "name", LocalDate.of(1995, 5, 23));
+        user2 = new User(0, "zxcvb@ya.ru", "name", "", LocalDate.of(1995, 5, 23));
     }
 
     @Test

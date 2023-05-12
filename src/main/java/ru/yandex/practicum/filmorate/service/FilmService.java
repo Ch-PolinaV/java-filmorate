@@ -3,10 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -25,14 +23,26 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
+    public List<Film> findAll() {
+        return filmStorage.findAll();
+    }
+
+    public Film getFilmById(long id) {
+        return filmStorage.getFilmById(id);
+    }
+
+    public Film create(Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film film) {
+        return filmStorage.update(film);
+    }
+
     public void addLike(long filmId, long userId) {
         Film film = filmStorage.getFilmById(filmId);
-        User user = userStorage.getUserById(userId);
+        userStorage.getUserById(userId);
 
-        if (film == null || user == null) {
-            log.info("Фильм и/или пользователь не найдены");
-            throw new NotFoundException("Введены неверные данные фильма и/или пользователя");
-        }
         if (film.getLikes().contains(userId)) {
             log.info("Пользователь с id: {} уже поставил лайк фильму с id: {}", userId, filmId);
             throw new ValidationException("Пользователь может поставить фильму лайк только 1 раз");
@@ -44,12 +54,8 @@ public class FilmService {
 
     public void deleteLike(long filmId, long userId) {
         Film film = filmStorage.getFilmById(filmId);
-        User user = userStorage.getUserById(userId);
+        userStorage.getUserById(userId);
 
-        if (film == null || user == null) {
-            log.info("Фильм и/или пользователь не найдены");
-            throw new NotFoundException("Введены неверные данные фильма и/или пользователя");
-        }
         if (!film.getLikes().contains(userId)) {
             log.info("Пользователь с id: {} не ставил лайк фильму с id: {}", userId, filmId);
             throw new ValidationException("Лайк от пользователя с id: " + userId + "не найден");

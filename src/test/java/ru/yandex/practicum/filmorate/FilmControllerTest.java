@@ -29,10 +29,10 @@ public class FilmControllerTest {
         FilmStorage filmStorage = new InMemoryFilmStorage();
         UserStorage userStorage = new InMemoryUserStorage();
         FilmService filmService = new FilmService(filmStorage, userStorage);
-        filmController = new FilmController(filmStorage, filmService);
-        film1 = new Film(0, "film1", "description", LocalDate.of(2001, 12, 10), 178, null);
-        film2 = new Film(0, "film3", "description", LocalDate.of(2002, 12, 5), 179, null);
-        film3 = new Film(0, "film2", "description", LocalDate.of(1002, 12, 5), 179, null);
+        filmController = new FilmController(filmService);
+        film1 = new Film(0, "film1", "description", LocalDate.of(2001, 12, 10), 178);
+        film2 = new Film(0, "film3", "description", LocalDate.of(2002, 12, 5), 179);
+        film3 = new Film(0, "film2", "description", LocalDate.of(1002, 12, 5), 179);
     }
 
     @Test
