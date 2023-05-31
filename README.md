@@ -29,7 +29,7 @@ FROM film;
 ```sql
 SELECT f.name
 FROM film AS f
-LEFT JOIN film_likes AS fl ON f.film_id=fl.film_id
+LEFT JOIN film_likes AS fl ON f.film_id = fl.film_id
 GROUP BY f.name
 ORDER BY COUNT(fl.user_id) DESC
 LIMIT 10;
@@ -38,7 +38,7 @@ LIMIT 10;
 ```sql
 SELECT u.name
 FROM users u
-left join friends f on u.user_id = f.friend_id
+LEFT JOIN friends f ON u.user_id = f.friend_id
 WHERE f.user_id IN (1, 3)
 GROUP BY u.name
 HAVING count(friend_id) = 2
