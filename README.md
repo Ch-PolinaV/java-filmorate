@@ -34,4 +34,12 @@ GROUP BY f.name
 ORDER BY COUNT(fl.user_id) DESC
 LIMIT 10;
 ```
-
+* Получить список общих друзей для пользователей: id=1 и id=3
+```sql
+SELECT u.name
+FROM users u
+left join friends f on u.user_id = f.friend_id
+WHERE f.user_id IN (1, 3)
+GROUP BY u.name
+HAVING count(friend_id) = 2
+```
