@@ -28,8 +28,8 @@ FROM film;
 * Получить топ-10 фильмов 
 ```sql
 SELECT f.name
-FROM film AS f
-LEFT JOIN film_likes AS fl ON f.film_id = fl.film_id
+FROM film f
+LEFT JOIN film_likes fl ON f.film_id = fl.film_id
 GROUP BY f.name
 ORDER BY COUNT(fl.user_id) DESC
 LIMIT 10;
@@ -41,5 +41,5 @@ FROM users u
 LEFT JOIN friends f ON u.user_id = f.friend_id
 WHERE f.user_id IN (1, 3)
 GROUP BY u.name
-HAVING count(friend_id) = 2
+HAVING count(friend_id) = 2;
 ```
