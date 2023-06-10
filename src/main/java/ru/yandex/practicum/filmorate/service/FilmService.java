@@ -2,25 +2,29 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final LikeStorage likeStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("userDbStorage") UserStorage userStorage, LikeStorage likeStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.likeStorage = likeStorage;
     }
 
     public List<Film> findAll() {
@@ -40,41 +44,32 @@ public class FilmService {
     }
 
     public void addLike(long filmId, long userId) {
-        Film film = filmStorage.getFilmById(filmId);
+        filmStorage.getFilmById(filmId);
         userStorage.getUserById(userId);
 
-        if (film.getLikes().contains(userId)) {
-            log.info("Пользователь с id: {} уже поставил лайк фильму с id: {}", userId, filmId);
-            throw new ValidationException("Пользователь может поставить фильму лайк только 1 раз");
-        }
-
         log.info("Пользователь с id: {} поставил лайк фильму с id: {}", userId, filmId);
-        film.getLikes().add(userId);
+        likeStorage.addLike(filmId, userId);
     }
 
     public void deleteLike(long filmId, long userId) {
-        Film film = filmStorage.getFilmById(filmId);
+        filmStorage.getFilmById(filmId);
         userStorage.getUserById(userId);
 
-        if (!film.getLikes().contains(userId)) {
-            log.info("Пользователь с id: {} не ставил лайк фильму с id: {}", userId, filmId);
-            throw new ValidationException("Лайк от пользователя с id: " + userId + "не найден");
+        try {
+            likeStorage.deleteLike(filmId, userId);
+            log.info("Пользователь с id: {} удалил лайк фильму с id: {}", userId, filmId);
+        } catch (Exception e) {
+            log.info("Лайк пользователя id={} не найден", userId);
         }
-
-        log.info("Пользователь с id: {} удалил лайк фильму с id: {}", userId, filmId);
-        film.getLikes().remove(userId);
     }
 
-    public List<Film> getBestFilms(Long count) {
+    public List<Film> getPopularFilms(Integer count) {
         if (count < 1) {
             log.info("Введено количество меньше 1");
             throw new ValidationException("Введенное число должно быть больше 0");
         }
 
         log.info("Получен список из {} наиболее популярных фильмов", count);
-        return filmStorage.findAll().stream()
-                .sorted(((o1, o2) -> o2.getLikes().size() - o1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return likeStorage.getPopularFilms(count);
     }
 }
