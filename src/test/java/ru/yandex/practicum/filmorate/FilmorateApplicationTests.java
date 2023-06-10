@@ -54,12 +54,12 @@ class FilmorateApplicationTests {
 	@Test
 	public void testCreateAndFindUserById() {
 		userStorage.create(user1);
-		Optional<User> userOptional = Optional.ofNullable(userStorage.getUserById(1));
+		Optional<User> userOptional = Optional.ofNullable(userStorage.getUserById(user1.getId()));
 
 		assertThat(userOptional)
 				.isPresent()
 				.hasValueSatisfying(user ->
-						assertThat(user).hasFieldOrPropertyWithValue("id", 1L)
+						assertThat(user).hasFieldOrPropertyWithValue("id", user1.getId())
 				);
 	}
 
@@ -93,12 +93,12 @@ class FilmorateApplicationTests {
 	@Test
 	public void testCreateAndFindFilmById() {
 		filmStorage.create(film1);
-		Optional<Film> filmOptional = Optional.ofNullable(filmStorage.getFilmById(1));
+		Optional<Film> filmOptional = Optional.ofNullable(filmStorage.getFilmById(film1.getId()));
 
 		assertThat(filmOptional)
 				.isPresent()
 				.hasValueSatisfying(film ->
-						assertThat(film).hasFieldOrPropertyWithValue("id", 1L)
+						assertThat(film).hasFieldOrPropertyWithValue("id", film1.getId())
 				);
 	}
 
