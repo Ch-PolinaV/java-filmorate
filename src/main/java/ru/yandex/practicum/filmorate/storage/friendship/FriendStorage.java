@@ -22,16 +22,18 @@ public class FriendStorage {
 
     public void addFriend(long userId, long friendId) {
         User friend = userStorage.getUserById(friendId);
-        boolean status = false;
-        if (friend.getFriends().contains(userId)) {
-            status = true;
-            String sql = "update friends set " +
-                    "first_user_id = ?, second_user_id = ?, status = ? " +
-                    "where first_user_id = ? and second_user_id = ?";
-            jdbcTemplate.update(sql, friendId, userId, true, friendId, userId);
+        boolean status = friend.getFriends().contains(userId);
+
+        String sqlInsert = "INSERT INTO friends (first_user_id, second_user_id, status) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sqlInsert, userId, friendId, status);
+
+        if (status) {
+            String sqlUpdateFriend = "UPDATE friends SET status = ? WHERE first_user_id = ? AND second_user_id = ?";
+            jdbcTemplate.update(sqlUpdateFriend, true, friendId, userId);
+
+            String sqlUpdateUser = "UPDATE friends SET status = ? WHERE first_user_id = ? AND second_user_id = ?";
+            jdbcTemplate.update(sqlUpdateUser, true, userId, friendId);
         }
-        String sql = "insert into friends (first_user_id, second_user_id, status) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, userId, friendId, status);
     }
 
     public void deleteFriend(long userId, long friendId) {
@@ -51,14 +53,16 @@ public class FriendStorage {
     public List<User> getFriends(long userId) {
         String sql = "SELECT * FROM FRIENDS f " +
                 "JOIN USERS u ON f.SECOND_USER_ID = u.USER_ID " +
-                "WHERE f.FIRST_USER_ID = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new User(
-                        rs.getLong("user_id"),
-                        rs.getString("email"),
-                        rs.getString("login"),
-                        rs.getString("name"),
-                        rs.getDate("birthday").toLocalDate()),
-                userId
-        );
+                "WHERE f.FIRST_USER_ID = " + userId;
+        return jdbcTemplate.query(sql, userStorage::mapRowToUser);
+    }
+
+    public List<User> getCommonFriends(long userId, long otherId) {
+        String sql = "SELECT USER_ID , EMAIL, LOGIN, NAME, BIRTHDAY " +
+                "FROM FRIENDS f1 " +
+                "JOIN FRIENDS f2 ON f2.FIRST_USER_ID = " + userId + " AND f2.SECOND_USER_ID = f1.SECOND_USER_ID " +
+                "JOIN USERS u ON u.USER_ID = f1.SECOND_USER_ID " +
+                "WHERE f1.FIRST_USER_ID = " + otherId;
+        return jdbcTemplate.query(sql, userStorage::mapRowToUser);
     }
 }

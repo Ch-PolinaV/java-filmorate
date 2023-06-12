@@ -3,15 +3,13 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 @Component("userDbStorage")
 @Slf4j
@@ -27,31 +25,18 @@ public class UserDbStorage implements UserStorage {
         String sql = "SELECT * FROM USERS";
         log.info("Выведен список всех пользователей");
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new User(
-                rs.getLong("user_id"),
-                rs.getString("email"),
-                rs.getString("login"),
-                rs.getString("name"),
-                rs.getDate("birthday").toLocalDate()
-        ));
+        return jdbcTemplate.query(sql, this::mapRowToUser);
     }
 
     @Override
     public User getUserById(long id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM USERS WHERE USER_ID = ?", id);
-
-        if (userRows.next()) {
-            User user = new User(
-                    userRows.getLong("user_id"),
-                    userRows.getString("email"),
-                    userRows.getString("login"),
-                    userRows.getString("name"),
-                    Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-
-            log.info("Найден пользователь: {} {}", user.getId(), user.getName());
-            return user;
+        if (!userExists(id)) {
+            log.info("Пользователь не найден");
+            throw new NotFoundException("Пользователь не найден");
         }
-        throw new NotFoundException("Пользователь с идентификатором " + id + " не найден.");
+        String sql = "SELECT * FROM USERS WHERE USER_ID = ?";
+        log.info("Найден пользователь: id = {}", id);
+        return jdbcTemplate.queryForObject(sql, this::mapRowToUser, id);
     }
 
     @Override
@@ -67,7 +52,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
-        if (getUserById(user.getId()) == null) {
+        if (!userExists(user.getId())) {
             log.info("Пользователь не найден");
             throw new NotFoundException("Пользователь не найден");
         }
@@ -82,6 +67,23 @@ public class UserDbStorage implements UserStorage {
                 user.getId());
         log.info("Пользователь с id: {} обновлен", user.getId());
         return user;
+    }
+
+    private boolean userExists(long userId) {
+        String sqlQuery = "SELECT COUNT(*) FROM users WHERE user_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sqlQuery, Integer.class, userId);
+        return Optional.ofNullable(count).map(c -> c > 0).orElse(false);
+    }
+
+    public User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
+        return User.builder()
+                .id(resultSet.getLong("user_id"))
+                .email(resultSet.getString("email"))
+                .login(resultSet.getString("login"))
+                .name(resultSet.getString("name"))
+                .birthday(resultSet.getDate("birthday").toLocalDate())
+                .friends(Collections.emptySet())
+                .build();
     }
 
     private Map<String, Object> toMap(User user) {

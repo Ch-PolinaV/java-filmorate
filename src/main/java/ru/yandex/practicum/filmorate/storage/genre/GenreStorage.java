@@ -9,7 +9,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Slf4j
@@ -42,18 +44,23 @@ public class GenreStorage {
         throw new NotFoundException("Жанр с идентификатором " + id + " не найден.");
     }
 
-    public List<Genre> getFilmsGenres(long filmId) {
+    public Set<Genre> getFilmsGenres(long filmId) {
         String sql = "SELECT fg.GENRE_ID, NAME " +
                 "FROM FILM_GENRE fg " +
                 "JOIN GENRE g ON fg.GENRE_ID = g.GENRE_ID " +
                 "WHERE fg.FILM_ID = ?;";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Genre(
+        return new HashSet<>(jdbcTemplate.query(sql, (rs, rowNum) -> new Genre(
                 rs.getInt("genre_id"),
-                rs.getString("name")), filmId
+                rs.getString("name")), filmId)
         );
     }
 
-    public void addFilmGenre(Film film) {
+    public void updateFilmGenre(Film film) {
+        deleteFilmGenre(film);
+        addFilmGenre(film);
+    }
+
+    private void addFilmGenre(Film film) {
         if (film.getGenres() != null) {
             List<Object[]> genres = new ArrayList<>();
             for (Genre genre : film.getGenres()) {
@@ -63,7 +70,7 @@ public class GenreStorage {
         }
     }
 
-    public void deleteFilmGenre(Film film) {
+    private void deleteFilmGenre(Film film) {
         jdbcTemplate.update("DELETE FROM FILM_GENRE WHERE FILM_ID = ?", film.getId());
     }
 }

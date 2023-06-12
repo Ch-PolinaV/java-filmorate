@@ -1,25 +1,26 @@
 package ru.yandex.practicum.filmorate.storage.like;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.GenreService;
-import ru.yandex.practicum.filmorate.service.RatingService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
 public class LikeStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final RatingService ratingService;
-    private final GenreService genreService;
+    private final FilmStorage filmStorage;
 
     @Autowired
-    public LikeStorage(JdbcTemplate jdbcTemplate, RatingService ratingService, GenreService genreService) {
+    public LikeStorage(JdbcTemplate jdbcTemplate, @Qualifier("filmDbStorage") FilmStorage filmStorage) {
         this.jdbcTemplate = jdbcTemplate;
-        this.ratingService = ratingService;
-        this.genreService = genreService;
+        this.filmStorage = filmStorage;
     }
 
     public void addLike(long filmId, long userId) {
@@ -33,21 +34,14 @@ public class LikeStorage {
     }
 
     public List<Film> getPopularFilms(Integer count) {
-        String sql = "SELECT f.FILM_ID, NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID " +
-                "FROM FILM f " +
-                "LEFT JOIN FILM_LIKES fl ON f.FILM_ID = fl.FILM_ID " +
-                "GROUP BY f.FILM_ID " +
-                "ORDER BY COUNT(fl.USER_ID) DESC " +
-                "LIMIT ?";
+        List<Film> popularFilms = new ArrayList<>(filmStorage.findAll());
+        popularFilms.sort(Comparator.comparingInt(f -> f.getLikes().size()));
+        Collections.reverse(popularFilms);
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Film(
-                        rs.getLong("film_id"),
-                        rs.getString("name"),
-                        rs.getString("description"),
-                        rs.getDate("release_date").toLocalDate(),
-                        rs.getInt("duration"),
-                        ratingService.getRatingById(rs.getInt("rating_id")),
-                        genreService.getFilmsGenres(rs.getLong("film_id"))),
-                count);
+        if (count != null && count < popularFilms.size()) {
+            popularFilms = popularFilms.subList(0, count);
+        }
+
+        return popularFilms;
     }
 }

@@ -9,9 +9,7 @@ import ru.yandex.practicum.filmorate.storage.friendship.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @Slf4j
@@ -59,10 +57,6 @@ public class UserService {
         userStorage.getUserById(userId);
         userStorage.getUserById(otherId);
 
-        Set<User> userFriends = new HashSet<>(friendStorage.getFriends(userId));
-        userFriends.retainAll(friendStorage.getFriends(otherId));
-
-        log.info("Получен список общих друзей");
-        return new ArrayList<>(userFriends);
+        return friendStorage.getCommonFriends(userId, otherId);
     }
 }

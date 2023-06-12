@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.RatingMPA;
 import ru.yandex.practicum.filmorate.storage.mpa.RatingStorage;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -19,9 +17,7 @@ public class RatingService {
     }
 
     public List<RatingMPA> findAll() {
-        return ratingStorage.findAll().stream()
-                .sorted(Comparator.comparing(RatingMPA::getId))
-                .collect(Collectors.toList());
+        return ratingStorage.findAll();
     }
 
     public RatingMPA getRatingById(int id) {

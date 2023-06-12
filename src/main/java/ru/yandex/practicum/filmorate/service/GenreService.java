@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,11 +31,10 @@ public class GenreService {
     }
 
     public Set<Genre> getFilmsGenres(long filmId) {
-        return new HashSet<>(genreStorage.getFilmsGenres(filmId));
+        return genreStorage.getFilmsGenres(filmId);
     }
 
-    public void addFilmGenre(Film film) {
-        genreStorage.deleteFilmGenre(film);
-        genreStorage.addFilmGenre(film);
+    public void updateFilmGenre(Film film) {
+        genreStorage.updateFilmGenre(film);
     }
 }

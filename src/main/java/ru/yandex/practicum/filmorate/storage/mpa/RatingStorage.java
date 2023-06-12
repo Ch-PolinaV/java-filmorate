@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.RatingMPA;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -23,10 +25,11 @@ public class RatingStorage {
         log.info("Выведен список всех рейтингов");
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> new RatingMPA(
-                rs.getInt("rating_id"),
-                rs.getString("name"),
-                rs.getString("description"))
-        );
+                        rs.getInt("rating_id"),
+                        rs.getString("name"),
+                        rs.getString("description"))).stream()
+                .sorted(Comparator.comparing(RatingMPA::getId))
+                .collect(Collectors.toList());
     }
 
     public RatingMPA getMPAById(int id) {

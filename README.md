@@ -36,10 +36,9 @@ LIMIT 10;
 ```
 * Получить список общих друзей для пользователей: id=1 и id=3
 ```sql
-SELECT u.name
-FROM users u
-LEFT JOIN friends f ON u.user_id = f.friend_id
-WHERE f.user_id IN (1, 3)
-GROUP BY u.name
-HAVING count(friend_id) = 2;
+SELECT USER_ID , EMAIL, LOGIN, NAME, BIRTHDAY
+FROM FRIENDS f1
+JOIN FRIENDS f2 ON f2.FIRST_USER_ID = 1 AND f2.SECOND_USER_ID = f1.SECOND_USER_ID
+JOIN USERS u ON u.USER_ID = f1.SECOND_USER_ID
+WHERE f1.FIRST_USER_ID = 2;
 ```
