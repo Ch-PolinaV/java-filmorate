@@ -6,8 +6,6 @@ import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,11 +55,6 @@ public class InMemoryUserStorage implements UserStorage {
         setName(user);
         users.put(user.getId(), user);
         return user;
-    }
-
-    @Override
-    public User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
-        return null;
     }
 
     private long createId() {

@@ -9,7 +9,9 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component("userDbStorage")
 @Slf4j
@@ -25,18 +27,18 @@ public class UserDbStorage implements UserStorage {
         String sql = "SELECT * FROM USERS";
         log.info("Выведен список всех пользователей");
 
-        return jdbcTemplate.query(sql, this::mapRowToUser);
+        return jdbcTemplate.query(sql, UserDbStorage::mapRowToUser);
     }
 
     @Override
     public User getUserById(long id) {
-        if (!userExists(id)) {
+        if (!userExists(jdbcTemplate, id)) {
             log.info("Пользователь не найден");
             throw new NotFoundException("Пользователь не найден");
         }
         String sql = "SELECT * FROM USERS WHERE USER_ID = ?";
         log.info("Найден пользователь: id = {}", id);
-        return jdbcTemplate.queryForObject(sql, this::mapRowToUser, id);
+        return jdbcTemplate.queryForObject(sql, UserDbStorage::mapRowToUser, id);
     }
 
     @Override
@@ -52,7 +54,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
-        if (!userExists(user.getId())) {
+        if (!userExists(jdbcTemplate, user.getId())) {
             log.info("Пользователь не найден");
             throw new NotFoundException("Пользователь не найден");
         }
@@ -69,20 +71,18 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
-    private boolean userExists(long userId) {
-        String sqlQuery = "SELECT COUNT(*) FROM users WHERE user_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sqlQuery, Integer.class, userId);
-        return Optional.ofNullable(count).map(c -> c > 0).orElse(false);
+    public static boolean userExists(JdbcTemplate jdbcTemplate, long userId) {
+        String sqlQuery = "SELECT (COUNT(*) > 0) FROM users WHERE user_id = ?";
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sqlQuery, Boolean.class, userId));
     }
 
-    public User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
+    public static User mapRowToUser(ResultSet resultSet, int rowNum) throws SQLException {
         return User.builder()
                 .id(resultSet.getLong("user_id"))
                 .email(resultSet.getString("email"))
                 .login(resultSet.getString("login"))
                 .name(resultSet.getString("name"))
                 .birthday(resultSet.getDate("birthday").toLocalDate())
-                .friends(Collections.emptySet())
                 .build();
     }
 

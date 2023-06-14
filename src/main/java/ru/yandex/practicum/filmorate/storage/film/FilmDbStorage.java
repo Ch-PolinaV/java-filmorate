@@ -33,15 +33,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> findAll() {
+    public Map<Long, Film> findAll() {
         String filmSql = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, mr.RATING_ID, mr.NAME AS RATING_NAME, mr.DESCRIPTION AS RATING_DESCRIPTION " +
                 "FROM FILM f " +
                 "LEFT JOIN MPA_RATING mr ON f.RATING_ID = mr.RATING_ID";
-
-        String genreSql = "SELECT fg.FILM_ID, g.GENRE_ID, g.NAME AS GENRE_NAME " +
-                "FROM FILM_GENRE fg " +
-                "JOIN GENRE g ON fg.GENRE_ID = g.GENRE_ID " +
-                "WHERE fg.FILM_ID IN (SELECT FILM_ID FROM FILM)";
 
         Map<Long, Film> filmMap = new HashMap<>();
 
@@ -54,7 +49,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.setDescription(rs.getString("DESCRIPTION"));
                 film.setReleaseDate(rs.getDate("RELEASE_DATE").toLocalDate());
                 film.setDuration(rs.getInt("DURATION"));
-                film.setLikes(new HashSet<>());
+                film.setLikes(0);
                 RatingMPA mpaRating = new RatingMPA();
                 mpaRating.setId(rs.getInt("RATING_ID"));
                 mpaRating.setName(rs.getString("RATING_NAME"));
@@ -64,18 +59,7 @@ public class FilmDbStorage implements FilmStorage {
                 filmMap.put(filmId, film);
             }
         });
-
-        jdbcTemplate.query(genreSql, rs -> {
-            long filmId = rs.getLong("FILM_ID");
-            Film film = filmMap.get(filmId);
-            if (film != null) {
-                int genreId = rs.getInt("GENRE_ID");
-                String genreName = rs.getString("GENRE_NAME");
-                Genre genre = new Genre(genreId, genreName);
-                film.getGenres().add(genre);
-            }
-        });
-        return new ArrayList<>(filmMap.values());
+        return filmMap;
     }
 
     @Override
@@ -89,23 +73,7 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN MPA_RATING mr ON f.RATING_ID = mr.RATING_ID " +
                 "WHERE f.FILM_ID = ?";
 
-        String genreSql = "SELECT g.GENRE_ID, g.NAME AS GENRE_NAME " +
-                "FROM FILM_GENRE fg " +
-                "JOIN GENRE g ON fg.GENRE_ID = g.GENRE_ID " +
-                "WHERE fg.FILM_ID = ?";
-
-        Film film = jdbcTemplate.queryForObject(filmSql, this::mapRowToFilm, id);
-        if (film != null) {
-            film.setGenres(new HashSet<>());
-            jdbcTemplate.query(genreSql, rs -> {
-                int genreId = rs.getInt("GENRE_ID");
-                String genreName = rs.getString("GENRE_NAME");
-                Genre genre = new Genre(genreId, genreName);
-                film.getGenres().add(genre);
-            }, id);
-        }
-
-        return film;
+        return jdbcTemplate.queryForObject(filmSql, FilmDbStorage::mapRowToFilm, id);
     }
 
     @Override
@@ -167,17 +135,23 @@ public class FilmDbStorage implements FilmStorage {
         return Optional.ofNullable(count).map(c -> c > 0).orElse(false);
     }
 
-    private Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
-        RatingMPA mpa = new RatingMPA(rs.getInt("RATING_ID"), rs.getString("RATING_NAME"), rs.getString("RATING_DESCRIPTION"));
+    public static Film mapRowToFilm(ResultSet rs, int rowNum) {
+        try {
 
-        return Film.builder()
-                .id(rs.getLong("FILM_ID"))
-                .name(rs.getString("NAME"))
-                .description(rs.getString("DESCRIPTION"))
-                .releaseDate(rs.getDate("RELEASE_DATE").toLocalDate())
-                .duration(rs.getInt("DURATION"))
-                .mpa(mpa)
-                .build();
+            RatingMPA mpa = new RatingMPA(rs.getInt("RATING_ID"), rs.getString("RATING_NAME"), rs.getString("RATING_DESCRIPTION"));
+
+            return Film.builder()
+                    .id(rs.getLong("FILM_ID"))
+                    .name(rs.getString("NAME"))
+                    .description(rs.getString("DESCRIPTION"))
+                    .releaseDate(rs.getDate("RELEASE_DATE").toLocalDate())
+                    .duration(rs.getInt("DURATION"))
+                    .mpa(mpa)
+                    .build();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     private Map<String, Object> toMap(Film film) {

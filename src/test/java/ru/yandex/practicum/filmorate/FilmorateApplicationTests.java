@@ -16,8 +16,8 @@ import ru.yandex.practicum.filmorate.storage.mpa.RatingStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,15 +41,54 @@ class FilmorateApplicationTests {
 
     @BeforeEach
     public void beforeEach() {
-        user1 = new User(0, "qwerty@ya.ru", "login", "name", LocalDate.of(1995, 5, 23), new HashSet<>());
-        user2 = new User(0, "zxcvb@ya.ru", "name", "", LocalDate.of(1995, 5, 23), new HashSet<>());
+        user1 = User.builder()
+                .id(0)
+                .email("qwerty@ya.ru")
+                .login("login")
+                .name("name")
+                .birthday(LocalDate.of(1995, 5, 23))
+                .build();
+        user2 = User.builder()
+                .id(0)
+                .email("zxcvb@ya.ru")
+                .login("name")
+                .name("")
+                .birthday(LocalDate.of(1995, 5, 23))
+                .build();
+
         Genre genre1 = new Genre(1, "Комедия");
         Genre genre3 = new Genre(3, "Мультфильм");
         Genre genre4 = new Genre(4, "Триллер");
         RatingMPA mpa = new RatingMPA(1, "G", "у фильма нет возрастных ограничений");
-        film1 = new Film(0, "film1", "description", LocalDate.of(2001, 12, 10), 178, new HashSet<>(), mpa, Set.of(genre1, genre3));
-        film2 = new Film(0, "film3", "description", LocalDate.of(2002, 12, 5), 179, new HashSet<>(), mpa, Set.of(genre1, genre4));
-        film3 = new Film(0, "film2", "description", LocalDate.of(2003, 12, 5), 179, new HashSet<>(), mpa, Set.of(genre3));
+        film1 = Film.builder()
+                .id(0)
+                .name("film1")
+                .description("description")
+                .releaseDate(LocalDate.of(2002, 12, 5))
+                .duration(179)
+                .mpa(mpa)
+                .genres(Set.of(genre1, genre3))
+                .build();
+
+        film2 = Film.builder()
+                .id(0)
+                .name("film2")
+                .description("description")
+                .releaseDate(LocalDate.of(2002, 12, 5))
+                .duration(179)
+                .mpa(mpa)
+                .genres(Set.of(genre1, genre4))
+                .build();
+
+        film3 = Film.builder()
+                .id(0)
+                .name("film3")
+                .description("description")
+                .releaseDate(LocalDate.of(2002, 12, 5))
+                .duration(179)
+                .mpa(mpa)
+                .genres(Set.of(genre3))
+                .build();
     }
 
     @Test
@@ -107,10 +146,10 @@ class FilmorateApplicationTests {
         filmStorage.create(film1);
         filmStorage.create(film2);
         filmStorage.create(film3);
-        Optional<List<Film>> optionalList = Optional.ofNullable(filmStorage.findAll());
+        Optional<Map<Long, Film>> optionalList = Optional.ofNullable(filmStorage.findAll());
 
         int size = optionalList
-                .map(List::size)
+                .map(Map::size)
                 .orElse(0);
         assertEquals(3, size);
     }

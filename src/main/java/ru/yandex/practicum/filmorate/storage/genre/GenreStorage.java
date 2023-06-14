@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -58,6 +59,16 @@ public class GenreStorage {
     public void updateFilmGenre(Film film) {
         deleteFilmGenre(film);
         addFilmGenre(film);
+    }
+
+    public String getFilmGenresQuery(List<Long> filmIds) {
+        String filmIdList = filmIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", ", "(", ")"));
+        return "SELECT fg.FILM_ID, g.GENRE_ID, g.NAME AS GENRE_NAME " +
+                "FROM FILM_GENRE fg " +
+                "JOIN GENRE g ON fg.GENRE_ID = g.GENRE_ID " +
+                "WHERE fg.FILM_ID IN " + filmIdList;
     }
 
     private void addFilmGenre(Film film) {

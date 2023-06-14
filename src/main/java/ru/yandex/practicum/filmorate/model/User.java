@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @Builder
@@ -23,9 +22,8 @@ public class User {
     private String name;
     @Past(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
-    private Set<Long> friends;
 
-    public User(long id, String email, String login, String name, LocalDate birthday, Set<Long> friends) {
+    public User(long id, String email, String login, String name, LocalDate birthday) {
         this.id = id;
         this.email = email;
         this.login = login;
@@ -34,6 +32,5 @@ public class User {
         if (name == null || name.isBlank()) {
             this.name = login;
         }
-        this.friends = friends;
     }
 }
