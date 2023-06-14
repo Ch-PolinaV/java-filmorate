@@ -107,7 +107,7 @@ public class FilmService {
                 int genreId = rs.getInt("GENRE_ID");
                 String genreName = rs.getString("GENRE_NAME");
                 Genre genre = new Genre(genreId, genreName);
-                film.getGenres().add(genre);
+                film.getGenres().add(Objects.requireNonNullElseGet(genre, Genre::new));
             }
         });
         return new ArrayList<>(filmMap.values());

@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.RatingMPA;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.RatingStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
@@ -32,6 +33,7 @@ class FilmorateApplicationTests {
     private final RatingStorage ratingStorage;
     private final UserDbStorage userStorage;
     private final FilmDbStorage filmStorage;
+    private final LikeStorage likeStorage;
     private User user1;
     private User user2;
     private Film film1;

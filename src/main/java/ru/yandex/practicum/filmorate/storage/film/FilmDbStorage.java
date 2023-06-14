@@ -129,29 +129,25 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
+    public static Film mapRowToFilm(ResultSet rs, int rowNum) throws SQLException {
+        RatingMPA mpa = new RatingMPA(rs.getInt("RATING_ID"), rs.getString("RATING_NAME"), rs.getString("RATING_DESCRIPTION"));
+        Set<Genre> genres = new HashSet<>();
+
+        return Film.builder()
+                .id(rs.getLong("FILM_ID"))
+                .name(rs.getString("NAME"))
+                .description(rs.getString("DESCRIPTION"))
+                .releaseDate(rs.getDate("RELEASE_DATE").toLocalDate())
+                .duration(rs.getInt("DURATION"))
+                .mpa(mpa)
+                .genres(genres)
+                .build();
+    }
+
     private boolean filmExists(long filmId) {
         String sqlQuery = "SELECT COUNT(*) FROM film WHERE film_id = ?";
         Integer count = jdbcTemplate.queryForObject(sqlQuery, Integer.class, filmId);
         return Optional.ofNullable(count).map(c -> c > 0).orElse(false);
-    }
-
-    public static Film mapRowToFilm(ResultSet rs, int rowNum) {
-        try {
-
-            RatingMPA mpa = new RatingMPA(rs.getInt("RATING_ID"), rs.getString("RATING_NAME"), rs.getString("RATING_DESCRIPTION"));
-
-            return Film.builder()
-                    .id(rs.getLong("FILM_ID"))
-                    .name(rs.getString("NAME"))
-                    .description(rs.getString("DESCRIPTION"))
-                    .releaseDate(rs.getDate("RELEASE_DATE").toLocalDate())
-                    .duration(rs.getInt("DURATION"))
-                    .mpa(mpa)
-                    .build();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
     }
 
     private Map<String, Object> toMap(Film film) {
