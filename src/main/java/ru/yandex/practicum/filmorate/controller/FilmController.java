@@ -33,8 +33,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getBestFilms(@RequestParam(defaultValue = "10") final Long count) {
-        return filmService.getBestFilms(count);
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") final Integer count) {
+        return filmService.getPopularFilms(count);
     }
 
     @PostMapping
@@ -51,7 +51,7 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable long id, @PathVariable long userId) {
-        log.debug("Получен GET-запрос к эндпоинту: /films/{}/like/{} на добавление лайка фильму", id, userId);
+        log.debug("Получен PUT-запрос к эндпоинту: /films/{}/like/{} на добавление лайка фильму", id, userId);
         filmService.addLike(id, userId);
     }
 

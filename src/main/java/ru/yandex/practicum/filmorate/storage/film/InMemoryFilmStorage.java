@@ -7,22 +7,20 @@ import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
-    private static final LocalDate CINEMA_BIRTHDAY = LocalDate.of(1895, 12, 28);
+    public static final LocalDate CINEMA_BIRTHDAY = LocalDate.of(1895, 12, 28);
     private long id = 1;
 
     @Override
-    public List<Film> findAll() {
+    public Map<Long, Film> findAll() {
         log.debug("Текущее количество фильмов: {}", films.size());
-        return new ArrayList<>(films.values());
+        return films;
     }
 
     @Override
